@@ -11,7 +11,6 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.PersistableBundle;
 
-import android.util.Log;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -103,18 +102,17 @@ class AppShortcutsModule extends ReactContextBaseJavaModule {
             int iconResId = context.getResources()
                     .getIdentifier(item.icon, "drawable", context.getPackageName());
 
-            Intent intent = new Intent(context, AppShortcutsModule.class);
-            intent.setAction(Intent.ACTION_MAIN);
+            Intent intent = new Intent(context, currentActivity.getClass());
+            intent.setAction(ACTION_SHORTCUT);
+            intent.putExtra(SHORTCUT_ITEM, item.toPersistableBundle());
 
-            Intent subIntent = new Intent();
-            subIntent.setAction(Intent.ACTION_VIEW);
-            subIntent.setData(Uri.parse(item.userInfo.toWritableMap().getString("url")));
+            intent.setData(Uri.parse(item.userInfo.toWritableMap().getString("url")));
 
             shortcuts.add(new ShortcutInfo.Builder(context, "id" + i)
                     .setShortLabel(item.title)
                     .setLongLabel(item.title)
                     .setIcon(Icon.createWithResource(context, iconResId))
-                    .setIntent(subIntent)
+                    .setIntent(intent)
                     .build());
         }
 
